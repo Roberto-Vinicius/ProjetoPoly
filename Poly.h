@@ -2,50 +2,49 @@
 #define POLY_H
 
 #include <iostream>
-#include <fstream>
-#include <cmath> // Adicionado para funções matemáticas
+#include <string>
 
 class Poly {
 private:
-    int grau;        // Grau do polinômio
-    double *a;       // Array dinâmico de coeficientes
+    int grau;        // Grau do polinÃ´mio
+    double *a;       // Array dinÃ¢mico de coeficientes
 
 public:
     // Construtores e destrutor
-    Poly();                              // Construtor padrão (polinômio vazio)
-    explicit Poly(int grau);             // Construtor com grau específico
-    Poly(const Poly &other);             // Construtor de cópia
+    Poly();                              // Construtor padrÃ£o (polinÃ´mio vazio)
+    explicit Poly(int grau);             // Construtor com grau especÃ­fico
+    Poly(const Poly &other);             // Construtor de cÃ³pia
     Poly(Poly &&other) noexcept;         // Construtor de movimento
     ~Poly();                             // Destrutor
 
-    // Métodos de acesso e modificação
-    int getGrau() const;                 // Retorna o grau do polinômio
-    double getCoef(int i) const;         // Retorna o coeficiente de índice i
-    void setCoef(int i, double valor);   // Define o coeficiente de índice i
+    // MÃ©todos de acesso e modificaÃ§Ã£o
+    int getGrau() const;                 // Retorna o grau do polinÃ´mio
+    double getCoef(int i) const;         // Retorna o coeficiente de Ã­ndice i
+    void setCoef(int i, double valor);   // Define o coeficiente de Ã­ndice i
 
     // Operadores sobrecarregados
-    Poly& operator=(const Poly &other);  // Operador de atribuição por cópia
-    Poly& operator=(Poly &&other) noexcept;  // Operador de atribuição por movimento
-    Poly operator-() const;              // Operador unário de negação
-    Poly operator+(const Poly &other) const; // Soma de polinômios
-    Poly operator-(const Poly &other) const; // Subtração de polinômios
-    Poly operator*(const Poly &other) const; // Multiplicação de polinômios
-    bool operator==(const Poly &other) const; // Comparação de igualdade
-    bool operator!=(const Poly &other) const; // Comparação de desigualdade
-    double operator[](int i) const;      // Acesso aos coeficientes via índice
-    double operator()(double x) const;   // Avaliação do polinômio para um dado x
+    Poly& operator=(const Poly &other);  // Operador de atribuiÃ§Ã£o por cÃ³pia
+    Poly& operator=(Poly &&other) noexcept;  // Operador de atribuiÃ§Ã£o por movimento
+    double operator[](int i) const;      // Acesso aos coeficientes via Ã­ndice
+    bool operator==(const Poly &other) const; // ComparaÃ§Ã£o de igualdade
+    bool operator!=(const Poly &other) const; // ComparaÃ§Ã£o de desigualdade
+    double operator()(double x) const;   // AvaliaÃ§Ã£o do polinÃ´mio para um dado x
+    Poly operator-() const;              // Operador unÃ¡rio de negaÃ§Ã£o
+    Poly operator+(const Poly &other) const; // Operador binÃ¡rio de soma
+    Poly operator-(const Poly &other) const; // Operador binÃ¡rio de subtraÃ§Ã£o
+    Poly operator*(const Poly &other) const; // Operador binÃ¡rio de multiplicaÃ§Ã£o
 
-    // Métodos utilitários
-    bool empty() const;                  // Verifica se o polinômio é vazio
-    bool isZero() const;                 // Verifica se o polinômio é nulo
-    double getValor(double x) const;     // Calcula o valor do polinômio para um dado valor de x
-    void recriar(int novoGrau);          // Redefine o polinômio para um novo grau
+    // MÃ©todos utilitÃ¡rios
+    void recriar(int novoGrau);          // Redefine o polinÃ´mio para um novo grau
+    bool empty() const;                  // Verifica se o polinÃ´mio Ã© vazio
+    bool isZero() const;                 // Verifica se o polinÃ´mio Ã© nulo
+    double getValor(double x) const;     // Calcula o valor do polinÃ´mio para um dado valor de x
 
-    // Entrada e saída de dados
-    friend std::istream& operator>>(std::istream &in, Poly &p);
+    // Entrada e saÃ­da de dados
     friend std::ostream& operator<<(std::ostream &out, const Poly &p);
-    bool salvar(const std::string &filename) const; // Salva polinômio em arquivo
-    bool ler(const std::string &filename);          // Lê polinômio de arquivo
+    friend std::istream& operator>>(std::istream &in, Poly &p);
+    bool salvar(const std::string &filename) const; // Salva polinÃ´mio em arquivo
+    bool ler(const std::string &filename);          // LÃª polinÃ´mio de arquivo
 };
 
 #endif // POLY_H

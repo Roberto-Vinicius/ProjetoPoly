@@ -3,38 +3,44 @@
 #include <cmath>
 #include <algorithm>
 #include <fstream>
-#include <string>
 
-// Construtor padr鉶 (polin鬽io vazio)
+// Construtor padr茫o (polin么mio vazio)
 Poly::Poly() : grau(-1), a(nullptr) {}
 
-// Construtor com grau espec韋ico
+// Construtor com grau espec铆fico
 Poly::Poly(int grau) : grau(grau), a(nullptr)
 {
     if (grau < 0)
     {
-        this->grau = -1;
-        a = nullptr;
+        this->grau = -1; // Polin么mio inv谩lido
     }
     else
     {
-        a = new double[grau + 1];
+        a = new double[grau + 1]; // Aloca espa莽o para os coeficientes
         for (int i = 0; i <= grau; ++i)
         {
-            a[i] = (i == grau) ? 1.0 : 0.0;  // 趌timo coeficiente 1.0, os outros 0.0
+            if (grau == 0) 
+            {
+                a[i] = 0.0; // Para grau zero, a0 deve ser 0.0
+            }
+            else 
+            {
+                a[i] = (i == grau) ? 1.0 : 0.0; // 脷ltimo coeficiente 茅 1.0, os outros s茫o 0.0
+            }
         }
     }
 }
 
-// Construtor de c髉ia
+// Construtor de c贸pia
 Poly::Poly(const Poly &other) : grau(other.grau), a(nullptr)
 {
-    if (grau >= 0)
+    if (grau >= 0) // Verifica se o grau 茅 v谩lido (maior ou igual a 0)
     {
-        a = new double[grau + 1];
-        for (int i = 0; i <= grau; ++i)
+        a = new double[grau + 1]; // Aloca mem贸ria para armazenar 'grau + 1' coeficientes
+
+        for (int i = 0; i <= grau; ++i) // Copia cada coeficiente do polin么mio 'other' para o novo polin么mio
         {
-            a[i] = other.a[i];
+            a[i] = other.a[i]; // Copia o coeficiente de 'other' para o novo array 'a'
         }
     }
 }
@@ -42,265 +48,317 @@ Poly::Poly(const Poly &other) : grau(other.grau), a(nullptr)
 // Construtor de movimento
 Poly::Poly(Poly &&other) noexcept : grau(other.grau), a(other.a)
 {
-    other.grau = -1;
-    other.a = nullptr;
+    other.grau = -1; // Define o grau do polin么mio 'other' como -1, indicando que ele est谩 vazio ou inv谩lido
+    other.a = nullptr; // Define o ponteiro 'a' do polin么mio 'other' como nullptr, liberando a mem贸ria anteriormente alocada
 }
 
 // Destrutor
 Poly::~Poly()
 {
-    delete[] a;
+    delete[] a; // Libera a mem贸ria alocada para o array de coeficientes 'a'
 }
 
-// Operador de atribui玢o por c髉ia
+// Operador de atribui莽茫o por c贸pia
 Poly& Poly::operator=(const Poly &other)
 {
-    if (this != &other)
+    if (this != &other) // Verifica se o objeto atual n茫o 茅 o mesmo que o objeto 'other'
     {
-        delete[] a;
-        grau = other.grau;
-        if (grau >= 0)
+        delete[] a; // Libera a mem贸ria alocada para o array de coeficientes 'a' do objeto atual
+        grau = other.grau; // Copia o grau do polin么mio 'other' para o objeto atual
+        if (grau >= 0) // Verifica se o grau 茅 v谩lido (n茫o negativo)
         {
-            a = new double[grau + 1];
-            for (int i = 0; i <= grau; ++i)
+            a = new double[grau + 1]; // Aloca mem贸ria para o array de coeficientes 'a' do objeto atual
+            for (int i = 0; i <= grau; ++i) // Copia cada coeficiente do polin么mio 'other' para o novo array 'a'
             {
-                a[i] = other.a[i];
+                a[i] = other.a[i]; // Copia o coeficiente de 'other' para o novo array 'a'
             }
         }
-        else
+        else // Se o grau for negativo
         {
-            a = nullptr;
+            a = nullptr; // Define o ponteiro 'a' como nullptr, indicando que n茫o h谩 coeficientes
         }
     }
-    return *this;
+    return *this; // Retorna o objeto atual para permitir atribui莽玫es encadeadas
 }
 
-// Operador de atribui玢o por movimento
+// Operador de atribui莽茫o por movimento
 Poly& Poly::operator=(Poly &&other) noexcept
 {
-    if (this != &other)
+    if (this != &other) // Verifica se o objeto atual n茫o 茅 o mesmo que o objeto 'other'
     {
-        delete[] a;
-        grau = other.grau;
-        a = other.a;
-        other.grau = -1;
-        other.a = nullptr;
+        delete[] a; // Libera a mem贸ria alocada para o array de coeficientes 'a' do objeto atual
+        grau = other.grau; // Copia o grau do polin么mio 'other' para o objeto atual
+        a = other.a; // Copia o ponteiro do array de coeficientes 'a' de 'other' para o objeto atual
+        other.grau = -1; // Define o grau do polin么mio 'other' como -1, indicando que ele est谩 vazio ou inv谩lido
+        other.a = nullptr; // Define o ponteiro 'a' do polin么mio 'other' como nullptr, liberando a mem贸ria anteriormente alocada
     }
-    return *this;
+    return *this; // Retorna o objeto atual para permitir atribui莽玫es encadeadas
 }
 
-// M閠odo para obter o grau
+// M茅todo para obter o grau
 int Poly::getGrau() const
 {
-    return grau;
+    return grau; //Retorna o grau do polin么mio
 }
 
-// M閠odo para obter o coeficiente i
+// M茅todo para obter o coeficiente i
 double Poly::getCoef(int i) const
 {
-    if (i < 0 || i > grau) return 0.0;
-    return a[i];
+    if (i < 0 || i > grau) return 0.0; // Se o 铆ndice for inv谩lido, retorna 0.0
+    return a[i]; // Retorna o coeficiente de 铆ndice i
 }
 
-// M閠odo para definir o coeficiente i
+// M茅todo para definir o coeficiente i
 void Poly::setCoef(int i, double valor)
 {
-    if (i < 0 || i > grau)
+    if (i < 0 || i > grau) // Se o 铆ndice for inv谩lido
     {
-        std::cerr << "Invalido indice: " << i << std::endl;
+        std::cerr << "脥ndice inv谩lido: " << i << std::endl; 
+        return;
+    }
+    if (i == grau && valor == 0.0 && grau > 0) // Se o 铆ndice for igual ao grau e o valor for 0.0 e o grau for maior que 0
+    {
+        std::cerr << "Valor inv谩lido: " << valor << std::endl;
         return;
     }
     a[i] = valor;
 }
 
-// Operador un醨io de nega玢o
-Poly Poly::operator-() const
+// Sobrecarga do operador []
+double Poly::operator[](int i) const
 {
-    Poly resultado(grau);
-    for (int i = 0; i <= grau; ++i)
-    {
-        resultado.a[i] = -a[i];
-    }
-    return resultado;
+    return getCoef(i); // Retorna o coeficiente de 铆ndice i
 }
 
-// Operador de soma
+// M茅todo recriar
+void Poly::recriar(int novoGrau)
+{
+    Poly temp(novoGrau); // Cria um objeto tempor谩rio 'temp' do tipo Poly com o novo grau 'novoGrau'
+    *this = std::move(temp); // Move o conte煤do de 'temp' para o objeto atual usando o operador de atribui莽茫o por movimento
+}
+
+// Operador de igualdade
+bool Poly::operator==(const Poly &other) const
+{
+    if (grau != other.grau) return false; // Verifica se os graus dos dois polin么mios s茫o diferentes; se forem, retorna false
+    for (int i = 0; i <= grau; ++i) // Itera sobre todos os coeficientes dos polin么mios
+    {
+        if (a[i] != other.a[i]) return false; // Verifica se algum coeficiente correspondente 茅 diferente; se for, retorna false
+    }
+    return true; // Se todos os coeficientes forem iguais, retorna true
+}
+
+// Operador de desigualdade
+bool Poly::operator!=(const Poly &other) const
+{
+    return !(*this == other); // Retorna o valor inverso da compara莽茫o de igualdade entre o objeto atual e 'other'
+}
+
+// M茅todo empty
+bool Poly::empty() const
+{
+    return grau < 0; // Retorna verdadeiro se o grau for menor que 0
+}
+
+// M茅todo isZero
+bool Poly::isZero() const
+{
+    return grau == 0 && a[0] == 0.0; // Retorna true se o polin么mio for de grau 0 e o coeficiente a[0] for 0.0, indicando que o polin么mio 茅 zero
+}
+
+// M茅todo getValor
+double Poly::getValor(double x) const
+{
+    if (empty()) return 0.0; // Se o polin么mio estiver vazio, retorna 0.0
+    double resultado = 0.0; // Inicializa a vari谩vel 'resultado' com 0.0
+    double potenciaX = 1.0;  // Inicializa a vari谩vel 'potenciaX' com 1.0, representando x^0
+    for (int i = 0; i <= grau; ++i) // Itera sobre todos os coeficientes do polin么mio
+    {
+        resultado += a[i] * potenciaX; // Adiciona o termo a[i] * x^i ao resultado
+        potenciaX *= x;  // Atualiza a pot锚ncia de x para a pr贸xima itera莽茫o (x^(i+1))
+    }
+    return resultado; // Retorna o valor calculado do polin么mio para o valor de x fornecido
+}
+
+// Sobrecarga do operador ()
+double Poly::operator()(double x) const
+{
+    return getValor(x); // Chama o m茅todo getValor(x) para calcular e retornar o valor do polin么mio para o valor de x fornecido
+}
+
+// Sobrecarga do operador <<
+std::ostream& operator<<(std::ostream &out, const Poly &p)
+{
+    if (p.empty()) return out; // Se o polin么mio estiver vazio, retorna o stream de sa铆da sem modificar
+    for (int i = p.grau; i >= 0; --i) // Itera sobre os coeficientes do polin么mio do maior grau para o menor
+    {
+        if (p.a[i] != 0.0) // Se o coeficiente n茫o for zero
+        {
+            if (i != p.grau && p.a[i] > 0.0) out << "+"; // Adiciona um sinal de mais se n茫o for o primeiro termo e o coeficiente for positivo
+            if (i == 0 || std::abs(p.a[i]) != 1.0) out << std::abs(p.a[i]); // Adiciona o coeficiente se for o termo constante ou se o coeficiente n茫o for 1 ou -1
+            if (i > 0) out << "x"; // Adiciona 'x' se o grau for maior que 0
+            if (i > 1) out << "^" << i; // Adiciona '^' seguido do grau se o grau for maior que 1
+        }
+    }
+    return out; // Retorna o stream de sa铆da modificado
+}
+
+// Sobrecarga do operador >>
+std::istream& operator>>(std::istream &in, Poly &p)
+{
+    if (p.empty()) return in; // Se o polin么mio estiver vazio, retorna o stream de entrada sem modificar
+    for (int i = p.grau; i >= 0; --i) // Itera sobre os coeficientes do polin么mio do maior grau para o menor
+    {
+        double coef; // Declara uma vari谩vel para armazenar o coeficiente
+        do {
+            std::cout << "x^" << i << ": "; // Solicita ao usu谩rio para inserir o coeficiente do termo x^i
+            in >> coef; // L锚 o coeficiente do stream de entrada
+            if (i == p.grau && coef == 0.0 && p.grau > 0) // Verifica se o coeficiente do maior grau 茅 zero e o grau 茅 maior que 0
+            {
+                std::cerr << "Coeficiente de maior grau n茫o pode ser 0.0. Digite novamente.\n"; // Exibe uma mensagem de erro
+            }
+            else
+            {
+                break; // Sai do loop se o coeficiente for v谩lido
+            }
+        } while (true); // Continua solicitando at茅 que um coeficiente v谩lido seja inserido
+        p.a[i] = coef; // Atribui o coeficiente ao array de coeficientes do polin么mio
+    }
+    return in; // Retorna o stream de entrada modificado
+}
+
+// M茅todo salvar
+bool Poly::salvar(const std::string &filename) const
+{
+    std::ofstream file(filename); // Abre um arquivo de sa铆da com o nome especificado por 'filename'
+    if (!file) return false; // Verifica se o arquivo foi aberto com sucesso; se n茫o, retorna false
+    file << "POLY " << grau << "\n"; // Escreve a string "POLY" seguida do grau do polin么mio no arquivo
+    for (int i = 0; i <= grau; ++i) // Itera sobre todos os coeficientes do polin么mio
+    {
+        file << a[i] << " "; // Escreve cada coeficiente no arquivo, separado por um espa莽o
+    }
+    file << "\n"; // Escreve uma nova linha no final do arquivo
+    return true; // Retorna true indicando que a opera莽茫o foi bem-sucedida
+}
+
+// M茅todo ler
+bool Poly::ler(const std::string &filename)
+{
+    std::ifstream file(filename); // Abre um arquivo de entrada com o nome especificado por 'filename'
+    if (!file) return false; // Verifica se o arquivo foi aberto com sucesso; se n茫o, retorna false
+
+    std::string header; // Declara uma string para armazenar o cabe莽alho
+    int newGrau; // Declara uma vari谩vel para armazenar o novo grau do polin么mio
+    file >> header >> newGrau; // L锚 o cabe莽alho e o novo grau do arquivo
+
+    if (header != "POLY" || !file) // Verifica se o cabe莽alho 茅 "POLY" e se a leitura do arquivo foi bem-sucedida
+    {
+        return false; // Se n茫o, retorna false
+    }
+
+    double *newA = nullptr; // Declara um ponteiro para armazenar o novo array de coeficientes
+    if (newGrau >= 0) // Verifica se o novo grau 茅 v谩lido (n茫o negativo)
+    {
+        newA = new double[newGrau + 1]; // Aloca mem贸ria para o novo array de coeficientes
+        for (int i = 0; i <= newGrau; ++i) // Itera sobre todos os coeficientes do novo polin么mio
+        {
+            if (!(file >> newA[i])) // L锚 cada coeficiente do arquivo; se a leitura falhar
+            {
+                delete[] newA; // Libera a mem贸ria alocada para o novo array
+                return false; // Retorna false
+            }
+        }
+        if (newGrau > 0 && newA[newGrau] == 0.0) // Verifica se o coeficiente do maior grau 茅 zero e o grau 茅 maior que 0
+        {
+            delete[] newA; // Libera a mem贸ria alocada para o novo array
+            return false; // Retorna false
+        }
+    }
+
+    delete[] a; // Libera a mem贸ria alocada para o array de coeficientes atual
+    grau = newGrau; // Atualiza o grau do polin么mio
+    a = newA; // Atualiza o array de coeficientes
+    return true; // Retorna true indicando que a opera莽茫o foi bem-sucedida
+}
+
+// Operador un谩rio de nega莽茫o
+Poly Poly::operator-() const
+{
+    if (empty()) return Poly(); // Se o polin么mio estiver vazio, retorna um polin么mio vazio
+    Poly resultado(grau); // Cria um novo polin么mio 'resultado' com o mesmo grau do polin么mio atual
+    for (int i = 0; i <= grau; ++i) // Itera sobre todos os coeficientes do polin么mio atual
+    {
+        resultado.a[i] = -a[i]; // Define cada coeficiente de 'resultado' como o negativo do coeficiente correspondente do polin么mio atual
+    }
+    return resultado; // Retorna o novo polin么mio 'resultado'
+}
+
+// Operador bin谩rio de soma
 Poly Poly::operator+(const Poly &other) const
 {
+    if (empty()) return other;
+    if (other.empty()) return *this;
+
     int maxGrau = std::max(grau, other.grau);
     Poly resultado(maxGrau);
     for (int i = 0; i <= maxGrau; ++i)
     {
         resultado.a[i] = this->getCoef(i) + other.getCoef(i);
     }
+
+    // Ajustar o grau do polin么mio resultante
+    while (resultado.grau > 0 && resultado.a[resultado.grau] == 0.0)
+    {
+        resultado.grau--;
+    }
+
     return resultado;
 }
 
-// Operador de subtra玢o
+// Operador bin谩rio de subtra莽茫o
 Poly Poly::operator-(const Poly &other) const
 {
-    int maxGrau = std::max(grau, other.grau);
-    Poly resultado(maxGrau);
-    for (int i = 0; i <= maxGrau; ++i)
+    if (empty()) return other; // Se o polin么mio atual estiver vazio, retorna o polin么mio 'other'
+    if (other.empty()) return *this; // Se o polin么mio 'other' estiver vazio, retorna o polin么mio atual
+
+    int maxGrau = std::max(grau, other.grau); // Determina o grau m谩ximo entre os dois polin么mios
+    Poly resultado(maxGrau); // Cria um novo polin么mio 'resultado' com o grau m谩ximo
+
+    for (int i = 0; i <= maxGrau; ++i) // Itera sobre todos os coeficientes at茅 o grau m谩ximo
     {
-        resultado.a[i] = this->getCoef(i) - other.getCoef(i);
+        resultado.a[i] = this->getCoef(i) + other.getCoef(i); // Soma os coeficientes correspondentes dos dois polin么mios e armazena no polin么mio 'resultado'
     }
-    return resultado;
+
+    // Ajustar o grau do polin么mio resultante
+    while (resultado.grau > 0 && resultado.a[resultado.grau] == 0.0) // Reduz o grau do polin么mio resultante se os coeficientes de maior grau forem zero
+    {
+        resultado.grau--; // Decrementa o grau do polin么mio resultante
+    }
+
+    return resultado; // Retorna o polin么mio resultante
 }
 
-// Operador de multiplica玢o
+// Operador bin谩rio de multiplica莽茫o
 Poly Poly::operator*(const Poly &other) const
 {
-    if (this->empty() || other.empty()) return Poly();
-    int newGrau = this->grau + other.grau;
-    Poly resultado(newGrau);
-    for (int i = 0; i <= newGrau; ++i) resultado.a[i] = 0.0;
-    for (int i = 0; i <= this->grau; ++i)
+    if (empty() || other.empty()) return Poly(); // Se qualquer um dos polin么mios estiver vazio, retorna um polin么mio vazio
+    if (isZero() || other.isZero()) return Poly(0); // Se qualquer um dos polin么mios for zero, retorna um polin么mio de grau 0
+
+    int newGrau = grau + other.grau; // Calcula o grau do polin么mio resultante como a soma dos graus dos dois polin么mios
+    Poly resultado(newGrau); // Cria um novo polin么mio 'resultado' com o grau calculado
+
+    for (int i = 0; i <= newGrau; ++i) // Inicializa todos os coeficientes do polin么mio resultante com zero
     {
-        for (int j = 0; j <= other.grau; ++j)
+        resultado.a[i] = 0.0; // Inicializa com zeros
+    }
+
+    for (int i = 0; i <= grau; ++i) // Itera sobre todos os coeficientes do polin么mio atual
+    {
+        for (int j = 0; j <= other.grau; ++j) // Itera sobre todos os coeficientes do polin么mio 'other'
         {
-            resultado.a[i + j] += this->a[i] * other.a[j];
+            resultado.a[i + j] += a[i] * other.a[j]; // Multiplica os coeficientes correspondentes e adiciona ao coeficiente apropriado do polin么mio resultante
         }
     }
-    return resultado;
-}
 
-// Operadores de igualdade
-bool Poly::operator==(const Poly &other) const
-{
-    if (grau != other.grau) return false;
-    for (int i = 0; i <= grau; ++i)
-    {
-        if (a[i] != other.a[i]) return false;
-    }
-    return true;
-}
-
-// Operador de desigualdade
-bool Poly::operator!=(const Poly &other) const
-{
-    return !(*this == other);
-}
-
-// Sobrecarga do operador []
-double Poly::operator[](int i) const
-{
-    return getCoef(i);
-}
-
-// Sobrecarga do operador ()
-double Poly::operator()(double x) const
-{
-    if (a == nullptr) return 0.0;
-    double resultado = 0.0;
-    double potenciaX = 1.0;  // Inicializa x^0
-    for (int i = 0; i <= grau; ++i)
-    {
-        resultado += a[i] * potenciaX;
-        potenciaX *= x;  // Atualiza a pot阯cia de x
-    }
-    return resultado;
-}
-
-
-// M閠odo recriar
-void Poly::recriar(int novoGrau)
-{
-    delete[] a;
-    grau = novoGrau;
-    if (grau < 0)
-    {
-        a = nullptr;
-    }
-    else
-    {
-        a = new double[grau + 1];
-        for (int i = 0; i <= grau; ++i)
-        {
-            a[i] = (i == grau) ? 1.0 : 0.0;
-        }
-    }
-}
-
-// Fun玢o de impress鉶
-std::ostream& operator<<(std::ostream &out, const Poly &p)
-{
-    if (p.empty()) return out;
-    for (int i = p.grau; i >= 0; --i)
-    {
-        if (p.a[i] != 0)
-        {
-            if (i != p.grau && p.a[i] > 0) out << "+";
-            if (i == 0 || std::abs(p.a[i]) != 1.0) out << p.a[i];
-            if (i > 0) out << "x";
-            if (i > 1) out << "^" << i;
-        }
-    }
-    return out;
-}
-
-// Operador de entrada
-std::istream& operator>>(std::istream &in, Poly &p)
-{
-    for (int i = p.grau; i >= 0; --i)
-    {
-        std::cout << "x^" << i << ": ";
-        in >> p.a[i];
-    }
-    return in;
-}
-
-// Salvar o polin鬽io em arquivo
-bool Poly::salvar(const std::string &filename) const
-{
-    std::ofstream file(filename);
-    if (!file) return false;
-    file << "POLY " << grau << "\n";
-    for (int i = 0; i <= grau; ++i)
-    {
-        file << a[i] << " ";
-    }
-    file << "\n";
-    return true;
-}
-
-// Ler o polin鬽io de arquivo
-bool Poly::ler(const std::string &filename)
-{
-    std::ifstream file(filename);
-    if (!file) return false;
-    std::string header;
-    file >> header;
-    if (header != "POLY") return false;
-    int newGrau;
-    file >> newGrau;
-    recriar(newGrau);
-    for (int i = 0; i <= grau; ++i)
-    {
-        file >> a[i];
-    }
-    return true;
-}
-
-// M閠odos utilit醨ios
-bool Poly::empty() const
-{
-    return grau < 0;
-}
-
-bool Poly::isZero() const
-{
-    return grau == 0 && a[0] == 0.0;
-}
-
-// Avaliar o valor do polin鬽io para um dado x
-double Poly::getValor(double x) const
-{
-    if (empty()) return 0.0;
-    double resultado = 0.0;
-    for (int i = 0; i <= grau; ++i)
-    {
-        resultado += a[i] * std::pow(x, i);
-    }
-    return resultado;
+    return resultado; // Retorna o polin么mio resultante
 }
